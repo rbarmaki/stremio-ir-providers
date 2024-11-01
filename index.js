@@ -3,6 +3,7 @@ import cors from "cors"
 
 import Avamovie from "./sources/avamovie.js";
 import {getCinemeta} from "./utils.js";
+import Source from "./sources/source.js";
 
 
 const addon = express()
@@ -42,15 +43,19 @@ const MANIFEST = {
         }
     ],
     resources: [
-        'stream',
         "catalog",
         {
             "name": "meta",
             "types": [ "series", "movie" ],
             "idPrefixes": [ ADDON_PREFIX ]
+        },
+        {
+            "name": "stream",
+            "types": [ "series", "movie" ],
+            "idPrefixes": [ ADDON_PREFIX ]
         }
     ],
-    types: ['movie',"series", "catalog", "meta"],
+    types: ['movie',"series"],
 }
 
 addon.get('/manifest.json', function (req, res) {
@@ -101,11 +106,13 @@ addon.get('/meta/:type/:id.json', async function (req, res, next) {
 
     let providerPrefix = ""
 
+    const providerMovieId = req.params.id.split((new Source).idSeparator)[1]
+
     // avamovie Provider
     if(req.params.id.includes('avamovie')){
         const provider = new Avamovie(process.env.AVAMOVIE_BASEURL)
         providerPrefix = provider.providerID
-        const movieData = await provider.getMovieData(req.params.type, req.params.id.split(provider.idSeparator)[1])
+        const movieData = await provider.getMovieData(req.params.type, providerMovieId)
         if(!!movieData){
             imdbId = provider.imdbID(movieData)
         }
@@ -119,22 +126,38 @@ addon.get('/meta/:type/:id.json', async function (req, res, next) {
     // append addon prefix to series video
     if(req.params.type === "series"){
         for (let i = 0; i < meta.meta.videos.length; i++) {
-
-            meta.meta.videos[i].id = ADDON_PREFIX + providerPrefix + meta.meta.videos[i].id
+            meta.meta.videos[i].id = ADDON_PREFIX + providerPrefix + providerMovieId + (new Source).idSeparator +  meta.meta.videos[i].id
         }
     }
 
     // append addon prefix to movie
     if(req.params.type === "movie"){
-        meta.meta.id = ADDON_PREFIX + providerPrefix + meta.meta.id
+        meta.meta.id = ADDON_PREFIX + providerPrefix + providerMovieId + (new Source).idSeparator + meta.meta.id
+        meta.meta.behaviorHints.defaultVideoId = meta.meta.id
     }
 
     return res.send(meta)
 });
 
 
+addon.get('/stream/:type/:id.json', async function (req, res, next) {
+    const providerMovieId = req.params.id.split((new Source).idSeparator)[1]
+
+    let streams = []
+    if(req.params.id.includes('avamovie')){
+        const provider = new Avamovie(process.env.AVAMOVIE_BASEURL)
+        const movieData = await provider.getMovieData(req.params.type, providerMovieId)
+        streams = provider.getLinks(req.params.type, movieData)
+    }
+
+
+    return res.send({streams})
+});
+
+
 addon.listen(7000, function () {
     console.log('Add-on Repository URL: http://127.0.0.1:7000/manifest.json');
+    return "0.0.0.0"
 });
 
 
