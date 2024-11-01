@@ -142,14 +142,15 @@ addon.get('/meta/:type/:id.json', async function (req, res, next) {
 
 addon.get('/stream/:type/:id.json', async function (req, res, next) {
     const providerMovieId = req.params.id.split((new Source).idSeparator)[1]
+    const imdbId = req.params.id.split((new Source).idSeparator)[2]
 
     let streams = []
+
     if(req.params.id.includes('avamovie')){
         const provider = new Avamovie(process.env.AVAMOVIE_BASEURL)
         const movieData = await provider.getMovieData(req.params.type, providerMovieId)
-        streams = provider.getLinks(req.params.type, movieData)
+        streams = provider.getLinks(req.params.type, imdbId, movieData)
     }
-
 
     return res.send({streams})
 });

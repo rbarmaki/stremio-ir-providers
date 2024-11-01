@@ -7,5 +7,9 @@ export default class Source {
     }
 
     async search(text){}
-    async imdbID(type, id){}
+    async getMovieData(type, id){}
+    getMovieLinks(movieData){}
+    getSeriesLinks(movieData, imdbId){}
+    getLinks(type, imdbId, movieData){}
+    imdbID(type, id){}
 }

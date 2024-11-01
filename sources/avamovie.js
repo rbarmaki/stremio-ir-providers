@@ -111,14 +111,35 @@ export default class Avamovie extends Source{
 
     }
 
-    getSeriesLinks(movieData){
+    getSeriesLinks(movieData, imdbId){
+        const parsed = parse(movieData)
+        const season = "S" + (+imdbId.split(":")[1]).toLocaleString("en-US", {minimumIntegerDigits:2})
+        const episode = "E" + (+imdbId.split(":")[2]).toLocaleString("en-US", {minimumIntegerDigits:2})
 
+        const links = []
+
+        for (const item of parsed.querySelectorAll(".dl")) {
+            const link = {url:"", title:""}
+            link.url = item.querySelector(".main").getAttribute("href")
+            if(!!link.url && link.url.includes(season+episode)){
+                const url = URL.parse(link.url)
+                link.title = url.pathname.split("/").pop()
+                links.push(link)
+            }
+        }
+
+        return links
     }
 
-    getLinks(type, movieData){
+    getLinks(type, imdbId, movieData){
         if(type === "movie"){
             return this.getMovieLinks(movieData)
         }
+
+        if(type === "series"){
+            return this.getSeriesLinks(movieData, imdbId)
+        }
+
     }
 
     imdbID(movieData){
