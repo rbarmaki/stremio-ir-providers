@@ -2,7 +2,7 @@ import express from 'express'
 import cors from "cors"
 
 import Avamovie from "./sources/avamovie.js";
-import {getCinemeta} from "./utils.js";
+import {getCinemeta, getSubtitle} from "./utils.js";
 import Source from "./sources/source.js";
 
 
@@ -51,6 +51,11 @@ const MANIFEST = {
         },
         {
             "name": "stream",
+            "types": [ "series", "movie" ],
+            "idPrefixes": [ ADDON_PREFIX ]
+        },
+        {
+            "name": "subtitles",
             "types": [ "series", "movie" ],
             "idPrefixes": [ ADDON_PREFIX ]
         }
@@ -123,19 +128,23 @@ addon.get('/meta/:type/:id.json', async function (req, res, next) {
         meta = await getCinemeta(req.params.type, imdbId)
     }
 
-    // append addon prefix to series video
-    if(req.params.type === "series"){
-        for (let i = 0; i < meta.meta.videos.length; i++) {
-            meta.meta.videos[i].id = ADDON_PREFIX + providerPrefix + providerMovieId + (new Source).idSeparator +  meta.meta.videos[i].id
+
+    if(meta.hasOwnProperty("meta")){
+        // append addon prefix to series video
+        if(req.params.type === "series"){
+            for (let i = 0; i < meta.meta.videos.length; i++) {
+                meta.meta.videos[i].id = ADDON_PREFIX + providerPrefix + providerMovieId + (new Source).idSeparator +  meta.meta.videos[i].id
+            }
         }
-    }
 
-    // append addon prefix to movie
-    if(req.params.type === "movie"){
-        meta.meta.id = ADDON_PREFIX + providerPrefix + providerMovieId + (new Source).idSeparator + meta.meta.id
-        meta.meta.behaviorHints.defaultVideoId = meta.meta.id
+        // append addon prefix to movie
+        if(req.params.type === "movie"){
+            meta.meta.id = ADDON_PREFIX + providerPrefix + providerMovieId + (new Source).idSeparator + meta.meta.id
+            meta.meta.behaviorHints.defaultVideoId = meta.meta.id
+        }
+    }else {
+        console.log("meta is empty!")
     }
-
     return res.send(meta)
 });
 
@@ -155,6 +164,26 @@ addon.get('/stream/:type/:id.json', async function (req, res, next) {
     return res.send({streams})
 });
 
+addon.get('/subtitles/:type/:id/:extraArgs.json', async function (req, res, next) {
+    const args = {
+        videoID:"",
+        videoSize:0,
+    }
+
+    if(!!req.params.extraArgs){
+        for (const item of decodeURIComponent(req.params.extraArgs).split("&")) {
+            const [key, val] = item.split("=")
+            args[key] = val
+        }
+    }
+
+    const imdbId = req.params.id.split((new Source).idSeparator)[2]
+
+    const data = await getSubtitle(req.params.type, imdbId)
+
+    return res.send(data)
+
+});
 
 addon.listen(7000, function () {
     console.log('Add-on Repository URL: http://127.0.0.1:7000/manifest.json');
