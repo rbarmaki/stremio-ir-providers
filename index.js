@@ -1,11 +1,15 @@
 import express from 'express'
 import cors from "cors"
 
-import Avamovie from "./sources/avamovie/api.js";
+import Avamovie from "./sources/avamovie.js";
+import {getCinemeta} from "./utils.js";
+
 
 const addon = express()
-
 addon.use(cors())
+
+
+const ADDON_PREFIX = "ip"
 
 const MANIFEST = {
     id: 'org.mmmohebi.stremioIrProviders',
@@ -37,9 +41,16 @@ const MANIFEST = {
             ]
         }
     ],
-    resources: ['stream', "catalog", "meta"],
-    types: ['movie', "catalog"],
-    idPrefixes: ['ip']
+    resources: [
+        'stream',
+        "catalog",
+        {
+            "name": "meta",
+            "types": [ "series", "movie" ],
+            "idPrefixes": [ ADDON_PREFIX ]
+        }
+    ],
+    types: ['movie',"series", "catalog", "meta"],
 }
 
 addon.get('/manifest.json', function (req, res) {
@@ -47,7 +58,6 @@ addon.get('/manifest.json', function (req, res) {
 });
 
 addon.get('/catalog/:type/:id/:extraArgs.json', async function (req, res, next) {
-    console.log();
     const args = {
         search:"",
         skip:0,
@@ -64,16 +74,43 @@ addon.get('/catalog/:type/:id/:extraArgs.json', async function (req, res, next) 
 
     // avamovie Provider
     if(req.params.id.includes('avamovie')){
-        const avamovie = new Avamovie('avamovie44.top')
-        data = await avamovie.search(args.search)
+        const provider = new Avamovie(process.env.AVAMOVIE_BASEURL)
+        data = await provider.search(args.search)
+
+        // append Provider ID prefix
+        for (let i = 0; i < data.length; i++) {
+            data[i].id = provider.providerID + data[i].id
+        }
     }
 
     data = data.filter(i=> i.type === req.params.type)
-    console.log(data);
-    console.log(args)
+
+    // append addon prefix
+    for (let i = 0; i < data.length; i++) {
+        data[i].id = ADDON_PREFIX + data[i].id
+    }
+
+
     res.send({
         "metas": data
     })
+});
+
+addon.get('/meta/:type/:id.json', async function (req, res, next) {
+    let imdbId = ""
+
+    // avamovie Provider
+    if(req.params.id.includes('avamovie')){
+        const provider = new Avamovie(process.env.AVAMOVIE_BASEURL)
+        imdbId = await provider.imdbID(req.params.type, req.params.id.split(provider.idSeparator)[1])
+    }
+
+    let meta = {}
+    if (imdbId.length >0){
+        meta = await getCinemeta(req.params.type, imdbId)
+    }
+
+    return res.send(meta)
 });
 
 

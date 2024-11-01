@@ -1,7 +1,8 @@
 {
-  "name": "stremio-addon-ir-providers",
+  "name": "stremio-ir-providers",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node --env-file=.env ./index.js"
   },

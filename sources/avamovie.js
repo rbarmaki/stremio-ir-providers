@@ -1,11 +1,12 @@
-import Source from "../source.js";
+import Source from "./source.js";
 import Axios from "axios";
 import {parse} from "node-html-parser";
-import {getBetweenParentheses} from "../utils.js";
+import {extractImdbId, getBetweenParentheses} from "../utils.js";
 
 export default class Avamovie extends Source{
     constructor(baseURL) {
         super(baseURL)
+        this.providerID = "avamovie" + this.idSeparator
     }
     async search(text) {
         const res = await Axios.request({
@@ -41,6 +42,24 @@ export default class Avamovie extends Source{
             return []
         }
 
+    }
+
+    async imdbID(type, id){
+        let url = `https://${this.baseURL}`
+        if(type==="series"){
+            url += "/series"
+        }
+        url += `/${id}`
+
+        const res = await Axios.request({
+            url: url,
+            method: "get",
+        })
+        if(!!res){
+            return extractImdbId(res.data)
+        }
+
+        return null
     }
 
 }
