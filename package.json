@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node --env-file=.env ./main"
+    "start": "node --env-file=.env ./index.js"
   },
   "keywords": [],
   "author": "",
@@ -11,8 +11,8 @@
   "description": "",
   "dependencies": {
     "axios": "^1.7.7",
-    "node-html-parser": "^6.1.13",
-    "request": "^2.88.2",
-    "stremio-addon-sdk": "^1.6.10"
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "node-html-parser": "^6.1.13"
   }
 }
