@@ -99,15 +99,34 @@ addon.get('/catalog/:type/:id/:extraArgs.json', async function (req, res, next) 
 addon.get('/meta/:type/:id.json', async function (req, res, next) {
     let imdbId = ""
 
+    let providerPrefix = ""
+
     // avamovie Provider
     if(req.params.id.includes('avamovie')){
         const provider = new Avamovie(process.env.AVAMOVIE_BASEURL)
-        imdbId = await provider.imdbID(req.params.type, req.params.id.split(provider.idSeparator)[1])
+        providerPrefix = provider.providerID
+        const movieData = await provider.getMovieData(req.params.type, req.params.id.split(provider.idSeparator)[1])
+        if(!!movieData){
+            imdbId = provider.imdbID(movieData)
+        }
     }
 
     let meta = {}
-    if (imdbId.length >0){
+    if (imdbId.length > 0){
         meta = await getCinemeta(req.params.type, imdbId)
+    }
+
+    // append addon prefix to series video
+    if(req.params.type === "series"){
+        for (let i = 0; i < meta.meta.videos.length; i++) {
+
+            meta.meta.videos[i].id = ADDON_PREFIX + providerPrefix + meta.meta.videos[i].id
+        }
+    }
+
+    // append addon prefix to movie
+    if(req.params.type === "movie"){
+        meta.meta.id = ADDON_PREFIX + providerPrefix + meta.meta.id
     }
 
     return res.send(meta)
