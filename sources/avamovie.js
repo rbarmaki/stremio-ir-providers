@@ -122,7 +122,7 @@ export default class Avamovie extends Source{
             const link = {url:"", title:""}
             link.url = item.querySelector(".main").getAttribute("href")
             if(!!link.url && link.url.includes(season+episode)){
-                const url = URL.parse(link.url)
+                const url = new URL(link.url);
                 link.title = url.pathname.split("/").pop()
                 links.push(link)
             }
