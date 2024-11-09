@@ -4,10 +4,12 @@ import cors from "cors"
 import Avamovie from "./sources/avamovie.js";
 import {getCinemeta, getSubtitle} from "./utils.js";
 import Source from "./sources/source.js";
+import {errorHandler} from "./errorMiddleware.js";
 
 
 const addon = express()
 addon.use(cors())
+addon.use(errorHandler);
 
 
 const ADDON_PREFIX = "ip"
