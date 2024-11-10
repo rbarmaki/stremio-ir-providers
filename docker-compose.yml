@@ -3,5 +3,9 @@ services:
     build: .
     container_name: stremioIrProviders
     restart: unless-stopped
+    environment:
+      - AVAMOVIE_BASEURL=
+      - AVAMOVIE_USERNAME=
+      - AVAMOVIE_PASSWORD=
     ports:
       - 7000:7000
