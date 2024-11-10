@@ -136,29 +136,32 @@ export default class Avamovie extends Source{
     getMovieLinks(movieData){
         const links = []
         // sub
-        for (const item of movieData?.dl?.movie?.sub?.items) {
-            const link = {url:"", title:""}
-            link.title = item.quality + " - "
-            link.title += item.size + " - "
-            link.title += item.encoder + " - "
-            link.title += item.subtype
+        if(movieData?.dl?.movie.hasOwnProperty("sub")){
+            for (const item of movieData.dl.movie.sub.items) {
+                const link = {url:"", title:""}
+                link.title = item.quality + " - "
+                link.title += item.size + " - "
+                link.title += item.encoder + " - "
+                link.title += item.subtype
 
-            link.url = item.url
+                link.url = item.url
 
-            links.push(link)
+                links.push(link)
+            }
         }
 
         // dub
-        for (const item of movieData?.dl?.movie?.dub?.items) {
-            const link = {url:"", title:""}
-            link.title = "(DUBBED) - "
-            link.title += item.quality + " - "
-            link.title += item.size + " - "
-            link.title += item.encoder
+        if(movieData?.dl?.movie.hasOwnProperty("dub")) {
+            for (const item of movieData.dl.movie.dub.items) {
+                const link = {url: "", title: ""}
+                link.title = "(DUBBED) - "
+                link.title += item.quality + " - "
+                link.title += item.size + " - "
+                link.title += item.encoder
 
-            link.url = item.url
-            links.push(link)
-
+                link.url = item.url
+                links.push(link)
+            }
         }
 
         return links
