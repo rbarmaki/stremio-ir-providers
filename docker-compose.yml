@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    container_name: stremioIrProviders
+    restart: unless-stopped
+    ports:
+      - 7000:7000
