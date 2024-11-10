@@ -26,8 +26,10 @@ const ADDON_PREFIX = "ip"
 
 const MANIFEST = {
     id: 'org.mmmohebi.stremioIrProviders',
-    version: '1.0.1',
-
+    version: '1.0.2',
+    contactEmail: "mmmohebi@outlook.com",
+    description:"https://github.com/MrMohebi/stremio-ir-providers",
+    logo:"",
     name: 'Iran Provider',
 
     catalogs: [
