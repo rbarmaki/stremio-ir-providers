@@ -5,6 +5,8 @@ export default class Source {
         this.baseURL = baseURL;
         this.providerID = "NOT_SET" + this.idSeparator;
     }
+    async login(){}
+    async isLogin(){}
 
     async search(text){}
     async getMovieData(type, id){}
