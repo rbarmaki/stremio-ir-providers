@@ -10,7 +10,7 @@ const port = Number(process.env.PROXY_PORT);
 // Rate limiting: 100 requests per 10 minutes
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000,
-    max: 200,
+    max: 600,
     message: 'Too many requests, please try again later.',
 });
 
