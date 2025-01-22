@@ -14,8 +14,8 @@ const limiter = rateLimit({
 });
 
 
-
-app.use(limiter);
+// due to using CDN it will create bugs, because CDN IPs are same for all users
+// app.use(limiter);
 
 const ALLOWED_DOMAINS = process.env.PROXY_ALLOWED_URLS.split(","); // Add your allowed domains here
 
