@@ -2,7 +2,6 @@ import express from 'express';
 import axios from 'axios';
 import rateLimit from 'express-rate-limit';
 import { URL } from 'url';
-import * as https from "https";
 
 const app = express();
 const port = Number(process.env.PROXY_PORT);
