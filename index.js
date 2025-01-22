@@ -2,7 +2,7 @@ import express from 'express'
 import cors from "cors"
 
 import Avamovie from "./sources/avamovie.js";
-import {getCinemeta, getSubtitle} from "./utils.js";
+import {getCinemeta, getSubtitle, modifyUrls} from "./utils.js";
 import Source from "./sources/source.js";
 import {errorHandler} from "./errorMiddleware.js";
 
@@ -26,7 +26,7 @@ const ADDON_PREFIX = "ip"
 
 const MANIFEST = {
     id: 'org.mmmohebi.stremioIrProviders',
-    version: '1.0.2',
+    version: '1.0.3',
     contactEmail: "mmmohebi@outlook.com",
     description:"https://github.com/MrMohebi/stremio-ir-providers",
     logo:"",
@@ -145,6 +145,9 @@ addon.get('/meta/:type/:id.json', async function (req, res, next) {
         let meta = {}
         if (imdbId.length > 0) {
             meta = await getCinemeta(req.params.type, imdbId)
+            if(process.env.PROXY_ENABLE === 'true' || process.env.PROXY_ENABLE === '1'){
+                meta = modifyUrls(meta, `${process.env.PROXY_URL}/${process.env.PROXY_PATH}?url=`)
+            }
         }
 
 

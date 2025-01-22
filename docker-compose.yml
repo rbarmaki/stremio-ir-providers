@@ -7,5 +7,26 @@ services:
       - AVAMOVIE_BASEURL=
       - AVAMOVIE_USERNAME=
       - AVAMOVIE_PASSWORD=
+
+      - PROXY_ENABLE=false
+      - PROXY_PORT=3005
+      - PROXY_URL=http://127.0.0.1:3005
+      - PROXY_PATH=proxy
     ports:
       - 7000:7000
+
+    command: [ "npm", "run", "start" ]
+
+
+  proxy:
+    build: .
+    container_name: stremioIrProviders-proxy
+    restart: unless-stopped
+    environment:
+      - PROXY_PORT=3005
+      - PROXY_ALLOWED_URLS=metahub.space,imdb.com,strem.io,tmdb.org
+      - PROXY_PATH=proxy
+    ports:
+      - 3005:3005
+
+    command: [ "npm", "run", "start-proxy" ]

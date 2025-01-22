@@ -43,3 +43,24 @@ export async function getSubtitle(type, imdbId){
 
     return null
 }
+
+
+export function modifyUrls(obj, prepend) {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+
+    const newObj = Array.isArray(obj) ? [] : {};
+
+    for (let key in obj) {
+        if (typeof obj[key] === 'string' && obj[key].startsWith('https://')) {
+            newObj[key] = prepend + encodeURIComponent(obj[key]);
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            newObj[key] = modifyUrls(obj[key], prepend);
+        } else {
+            newObj[key] = obj[key];
+        }
+    }
+
+    return newObj;
+}

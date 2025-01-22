@@ -1,11 +1,13 @@
 {
   "name": "stremio-ir-providers",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "dev": "node --env-file=.env ./index.js",
-    "start": "node ./index.js"
+    "dev-proxy": "node --env-file=.env ./proxyServer.js",
+    "start": "node ./index.js",
+    "start-proxy": "node ./proxyServer.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +17,7 @@
     "axios": "^1.7.7",
     "cors": "^2.8.5",
     "express": "^4.21.1",
+    "express-rate-limit": "^7.5.0",
     "node-html-parser": "^6.1.13"
   }
 }
