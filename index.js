@@ -26,7 +26,7 @@ const ADDON_PREFIX = "ip"
 
 const MANIFEST = {
     id: 'org.mmmohebi.stremioIrProviders',
-    version: '1.0.3',
+    version: '1.0.4',
     contactEmail: "mmmohebi@outlook.com",
     description:"https://github.com/MrMohebi/stremio-ir-providers",
     logo:"",
@@ -157,6 +157,7 @@ addon.get('/meta/:type/:id.json', async function (req, res, next) {
                 for (let i = 0; i < meta.meta.videos.length; i++) {
                     meta.meta.videos[i].id = ADDON_PREFIX + providerPrefix + providerMovieId + (new Source).idSeparator + meta.meta.videos[i].id
                 }
+                meta.meta.id = req.params.id
             }
 
             // append addon prefix to movie
