@@ -185,7 +185,7 @@ export default class Avamovie extends Source{
             link.title += item.quality + " - "
             link.title += item.size + " - "
 
-            link.url = item?.episodes[episode]?.url
+            link.url = item?.episodes[episode - 1]?.url
 
             links.push(link)
         }
