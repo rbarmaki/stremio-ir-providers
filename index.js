@@ -29,7 +29,7 @@ const MANIFEST = {
     version: '1.0.5',
     contactEmail: "mmmohebi@outlook.com",
     description:"https://github.com/MrMohebi/stremio-ir-providers",
-    logo:"",
+    logo:"https://raw.githubusercontent.com/MrMohebi/stremio-ir-providers/refs/heads/master/logo.png",
     name: 'Iran Provider',
 
     catalogs: [
