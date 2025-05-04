@@ -4,7 +4,7 @@ A plugin for Stremio to stream movies and series from Iranian providers like 30n
 Also, you can share one account for multiple users without any trouble :)
 
 ## Usage:
-After installing the plugin (currently not available for public usage), 
+After installing the plugin (https://sip.m17i.xyz/manifest.json), 
 search title and results will be available to watch.
 
 ## proxy server:
