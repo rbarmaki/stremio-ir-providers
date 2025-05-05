@@ -118,6 +118,6 @@ Stremio یک برنامه مرکز رسانه‌ای است که به شما ا�
 
 ### android
 
-<video width="300" height="720" controls>
-  <source src="assets/android.mp4" type="video/mp4">
-</video>
+
+https://github.com/user-attachments/assets/479bce1d-3e70-4520-a745-9bc062946d34
+
