@@ -99,6 +99,6 @@ Addons sync across your account, so installing on Web often adds it to Android a
 
 ## Tutorial
 ### android
-<video width="300" height="720" controls>
-  <source src="assets/android.mp4" type="video/mp4">
-</video>
+
+https://github.com/user-attachments/assets/f91f8c92-d7df-41c8-8e87-913269c5446c
+
