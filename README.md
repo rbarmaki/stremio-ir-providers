@@ -12,8 +12,8 @@ In countries like Iran, where IMDb and Metahub are sanctioned or censored, thumb
 
 **Enabling the Proxy Feature:**
 
-1. To enable this feature, set [PROXY_ENABLE](./.env.example#L6) to true.
-2. Specify the public URL endpoint of your proxy server by setting [PROXY_URL](./.env.example#L6).
+1. To enable this feature, set [PROXY_ENABLE](./.env.example#L11) to true.
+2. Specify the public URL endpoint of your proxy server by setting [PROXY_URL](./.env.example#L11).
 
 The other default settings are sufficient for basic usage and should work without additional modifications.
 ## Supported provides:

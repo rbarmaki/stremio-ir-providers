@@ -1,11 +1,21 @@
 import express from 'express'
 import cors from "cors"
+import winston from "winston"
 
 import Avamovie from "./sources/avamovie.js";
 import {getCinemeta, getSubtitle, modifyUrls} from "./utils.js";
 import Source from "./sources/source.js";
 import {errorHandler} from "./errorMiddleware.js";
 
+
+const logger = winston.createLogger({
+    level: process.env.LOG_LEVEL ?? 'info',
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [new winston.transports.Console()],
+});
 
 const addon = express()
 addon.use(cors())
@@ -14,27 +24,23 @@ addon.use(errorHandler);
 
 // ------------- init providers ------------- :
 // avamovie
-const AvamovieProvider = new Avamovie(process.env.AVAMOVIE_BASEURL)
-AvamovieProvider.login().then((res) => {
-    if (res) {
-        console.log(`Avamovie is logged in with token: ${AvamovieProvider.token}, user_id: ${AvamovieProvider.userId}`)
-    }
-})
+const AvamovieProvider = new Avamovie(process.env.AVAMOVIE_BASEURL, logger)
+AvamovieProvider.login().then()
 
 
 const ADDON_PREFIX = "ip"
 
 const MANIFEST = {
     id: 'org.mmmohebi.stremioIrProviders',
-    version: '1.0.7',
+    version: '1.1.0',
     contactEmail: "mmmohebi@outlook.com",
     description:"stream movies and series from Iranian providers like 30nama or avamovie. Source: https://github.com/MrMohebi/stremio-ir-providers",
     logo:"https://raw.githubusercontent.com/MrMohebi/stremio-ir-providers/refs/heads/master/logo.png",
-    name: 'Iran Provider',
+    name: 'Iran Provider' + (process.env.DEV_MODE === 'true' ? " - DEV" : ""),
 
     catalogs: [
         {
-            name: "AvaMovie",
+            name: "AvaMovie" + (process.env.DEV_MODE === 'true' ? " - DEV" : ""),
             type: "movie",
             id: "avamovie_movies",
             extra: [
@@ -45,7 +51,7 @@ const MANIFEST = {
             ]
         },
         {
-            name: "AvaMovie",
+            name: "AvaMovie" + (process.env.DEV_MODE === 'true' ? " - DEV" : ""),
             type: "series",
             id: "avamovie_series",
             extra: [
@@ -118,7 +124,7 @@ addon.get('/catalog/:type/:id/:extraArgs.json', async function (req, res, next) 
             "metas": data
         })
     } catch (e) {
-        console.log(e);
+        logger.error(e)
         res.send({
             "metas": {}
         })
@@ -166,12 +172,12 @@ addon.get('/meta/:type/:id.json', async function (req, res, next) {
                 meta.meta.behaviorHints.defaultVideoId = meta.meta.id
             }
         } else {
-            console.log("meta is empty!")
+            logger.warn("meta is empty!")
         }
         return res.send(meta)
 
     } catch (e) {
-        console.log(e);
+        logger.error(e)
         res.send({})
     }
 });
@@ -192,7 +198,7 @@ addon.get('/stream/:type/:id.json', async function (req, res, next) {
         return res.send({streams})
 
     } catch (e) {
-        console.log(e);
+        logger.error(e)
         res.send({})
     }
 });
@@ -217,13 +223,18 @@ addon.get('/subtitles/:type/:id/:extraArgs.json', async function (req, res, next
 
         return res.send(data)
     } catch (e) {
-        console.log(e);
+        logger.error(e)
         res.send({})
     }
 });
 
+
+addon.get('/health', async function (req, res, next) {
+    return res.send('ok')
+});
+
 addon.listen(7000, function () {
-    console.log('Add-on Repository URL: http://127.0.0.1:7000/manifest.json');
+    logger.info('Add-on Repository URL: http://127.0.0.1:7000/manifest.json')
     return "0.0.0.0"
 });
 

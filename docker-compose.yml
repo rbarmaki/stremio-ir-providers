@@ -4,6 +4,9 @@ services:
     container_name: stremioIrProviders
     restart: unless-stopped
     environment:
+      - LOG_LEVEL=info
+      - DEV_MODE=false
+
       - AVAMOVIE_BASEURL=
       - AVAMOVIE_USERNAME=
       - AVAMOVIE_PASSWORD=
@@ -16,7 +19,12 @@ services:
       - 7000:7000
 
     command: [ "npm", "run", "start" ]
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:7000/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 2
+      start_period: 30s
 
   proxy:
     build: .

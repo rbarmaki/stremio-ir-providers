@@ -8,8 +8,8 @@ export default class Avamovie extends Source{
     token = ""
     userId = ""
 
-    constructor(baseURL) {
-        super(baseURL)
+    constructor(baseURL, logger) {
+        super(baseURL, logger)
         this.providerID = "avamovie" + this.idSeparator
     }
 
@@ -27,15 +27,18 @@ export default class Avamovie extends Source{
                 }
             })
             if(res.data?.stat === "ok"){
+                this.logger.debug(`Avamovie was logged in with token: ${this.token}, user_id: ${this.userId}`)
                 return true;
             }
         }catch (e) {}
+        this.logger.info(`Avamovie is NOT logged in`)
         return false
     }
 
     async login(){
         const isLogin = await this.isLogin()
         if(isLogin){
+            this.logger.debug(`Avamovie was logged in with token: ${this.token}, user_id: ${this.userId}`)
             return true
         }
 
@@ -54,16 +57,18 @@ export default class Avamovie extends Source{
             if(res.data?.stat === "ok"){
                 this.token = res.data.token
                 this.userId = res.data.user_id
+                this.logger.info(`Avamovie now is logged in with token: ${this.token}, user_id: ${this.userId}`)
                 return true;
             }
         }catch (e) {
-            console.log(e)
+            this.logger.error(e)
         }
         return false
     }
 
     async search(text) {
         try {
+            this.logger.debug(`Avamovie searching for ${text}`)
             const res = await Axios.request({
                 url: `https://${this.baseURL}/api-url/app/1/search`,
                 method: "post",
@@ -97,15 +102,15 @@ export default class Avamovie extends Source{
                 return items
             }
         }catch (e) {
-            console.log("ERROR in getting list from avamovie", e)
+            this.logger.error("ERROR in getting list from avamovie", e)
         }
 
         return []
-
     }
 
     async getMovieData(type, id){
         try {
+            this.logger.debug(`Avamovie getting movie with id ${id}`)
             const res = await Axios.request({
                 url: `https://${this.baseURL}/api-url/app/1/single`,
                 method: "post",
@@ -127,7 +132,8 @@ export default class Avamovie extends Source{
                 return res.data;
             }
         }catch (e) {
-            console.log(e)
+            this.logger.error(e)
+            this.login().then()
         }
 
         return null
@@ -169,26 +175,32 @@ export default class Avamovie extends Source{
     }
 
     getSeriesLinks(movieData, imdbId){
-        const season = (+imdbId.split(":")[1]).toLocaleString("en-US", {minimumIntegerDigits:2})
-        const episode = +imdbId.split(":")[2]
-
         const links = []
+        try {
+            const season = (+imdbId.split(":")[1]).toLocaleString("en-US", {minimumIntegerDigits:2})
+            const episode = +imdbId.split(":")[2]
 
-        for (const item of movieData.dl.series[season].items) {
-            const link = {url:"", title:""}
-            if(!!(+item.dub)){
-                link.title = "(DUBBED) - " + `S${season}E${episode}`
-            }else{
-                link.title = (item?.subtype ? (item.subtype + " - ") : "") + `S${season}E${episode}`
+
+            for (const item of movieData.dl.series[season].items) {
+                const link = {url:"", title:""}
+                if(!!(+item.dub)){
+                    link.title = "(DUBBED) - " + `S${season}E${episode}`
+                }else{
+                    link.title = (item?.subtype ? (item.subtype + " - ") : "") + `S${season}E${episode}`
+                }
+
+                link.title += item.quality + " - "
+                link.title += item.size + " - "
+
+                link.url = item?.episodes[episode - 1]?.url
+
+                links.push(link)
             }
-
-            link.title += item.quality + " - "
-            link.title += item.size + " - "
-
-            link.url = item?.episodes[episode - 1]?.url
-
-            links.push(link)
+        }catch (e) {
+            this.logger.debug(`error with => Avamovie, ${movieData}, ${imdbId}`)
+            this.logger.error(e)
         }
+
 
         return links
     }
