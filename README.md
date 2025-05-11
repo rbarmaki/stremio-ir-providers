@@ -1,4 +1,4 @@
-# Stremio IR Provide
+    # Stremio IR Provide
 A plugin for Stremio to stream movies and series from Iranian providers like 30nama or avamovie. 
 
 Also, you can share one account for multiple users without any trouble :)
@@ -25,4 +25,4 @@ The other default settings are sufficient for basic usage and should work withou
 - [x] [Avamovie](https://avamovie.shop)
 - [ ] [30nama](https://30nama.com)
 - [ ] [Download day](https://download-day.com/)
-- [ ] [cody] (https://cody.oliver-stone.net)
+- [ ] [ cody ] (https://cody.oliver-stone.net)
