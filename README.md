@@ -25,4 +25,3 @@ The other default settings are sufficient for basic usage and should work withou
 - [x] [Avamovie](https://avamovie.shop)
 - [ ] [30nama](https://30nama.com)
 - [ ] [Download day](https://download-day.com/)
-- [ ] [ cody ] (https://cody.oliver-stone.net)
